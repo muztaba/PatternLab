@@ -95,6 +95,9 @@ public class ContinuousFeature extends NaiveClassifier{
             }
         }
 
+        public double getStd(int classNumber) {
+            return deviation.get(classNumber);
+        }
     }
 
     private void separateContinuousData(List<List<Integer>> lists) {
@@ -121,11 +124,30 @@ public class ContinuousFeature extends NaiveClassifier{
         PriorityQueue<Node> queue = new PriorityQueue<>();
 
         for (List<Integer> row : testList) {
-            for (int column = 0; column < classIndex; column++) {
 
-            }
         }
 
     }
 
+    protected double probTo(int classNumber, List<Integer> list) {
+        double p = 1.0;
+        for (int column = 0; column < list.size(); column++) {
+            if (continuousDataColumn.contains(column)) {
+                p *=
+            }
+        }
+        return p;
+    }
+
+    protected double getMean(int row, int classNumber) {
+        return continuousDataList.get(row).getMean(classNumber);
+    }
+
+    protected double getStd(int row, int classNumber) {
+        return continuousDataList.get(row).getStd(classNumber);
+    }
+
+    protected double probToContinuousData(double mean, double std) {
+        return 1.0;
+    }
 }

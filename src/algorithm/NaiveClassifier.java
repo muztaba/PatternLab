@@ -13,7 +13,7 @@ public class NaiveClassifier {
     private Map<Integer, Map<Integer, Map<Integer, Integer>>> classList;
     private Map<Integer, Integer> sumList;
     private int classNumber;
-    private int error;
+    protected int error;
     private double totalSum;
 
     public NaiveClassifier() {
@@ -55,13 +55,13 @@ public class NaiveClassifier {
         }
     }
 
-    private void calculateTotalSum() {
+    protected void calculateTotalSum() {
         for (Map.Entry<Integer, Integer> itr : sumList.entrySet()) {
             totalSum += itr.getValue().doubleValue();
         }
     }
 
-    private class Node implements Comparable<Node> {
+    protected class Node implements Comparable<Node> {
         final int classNumber;
         final double probability;
 
@@ -99,7 +99,7 @@ public class NaiveClassifier {
         return this.error;
     }
 
-    private double probTo(int classNum, List<Integer> features) {
+    protected double probTo(int classNum, List<Integer> features) {
         double p = 1.0;
         for (int featureNum = 0; featureNum < features.size(); featureNum++) {
             double value = getFromMap(classNum, featureNum, features.get(featureNum));
@@ -109,7 +109,7 @@ public class NaiveClassifier {
         return p;
     }
 
-    private double getFromMap(int classNum, int featureNum, int feature) {
+    protected double getFromMap(int classNum, int featureNum, int feature) {
         Integer integer = classList.get(classNum).get(featureNum).get(feature);
         return integer != null ? integer.doubleValue() : 1.0;
     }

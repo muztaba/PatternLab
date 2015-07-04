@@ -114,4 +114,18 @@ public class ContinuousFeature extends NaiveClassifier{
         continuousDataList.get(column).setData(whichClass, data);
     }
 
+    @Override
+    public void test(List<List<Integer>> testList) {
+        super.calculateTotalSum();
+        int classIndex = testList.get(0).size() - 1;
+        PriorityQueue<Node> queue = new PriorityQueue<>();
+
+        for (List<Integer> row : testList) {
+            for (int column = 0; column < classIndex; column++) {
+
+            }
+        }
+
+    }
+
 }

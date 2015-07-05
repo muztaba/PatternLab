@@ -11,10 +11,10 @@ public class NaiveClassifier {
     // Map 2nd = what feature it is. Generally column number
     // Map 3rd = what is the feature number. That is what is in a[i][j].
     private Map<Integer, Map<Integer, Map<Integer, Integer>>> classList;
-    private Map<Integer, Integer> sumList;
+    protected Map<Integer, Integer> sumList;
     protected int classNumber;
     protected int error;
-    private double totalSum;
+    protected double totalSum;
 
     public NaiveClassifier() {
         throw new IllegalArgumentException("Class number should be initialized");

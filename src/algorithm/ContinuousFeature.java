@@ -7,10 +7,11 @@ import java.util.*;
 /**
  * Created by seal on 7/2/15.
  */
-public class ContinuousFeature extends NaiveClassifier{
+public class ContinuousFeature extends NaiveClassifier {
     List<Integer> continuousDataColumn;
-//    List<ContinuousData> continuousDataList;
+    //    List<ContinuousData> continuousDataList;
     Map<Integer, ContinuousData> continuousDataList;
+
     public ContinuousFeature(int classNumber, int... continuousDataColumn) {
         super(classNumber);
         this.continuousDataColumn = ArrayUtils.arrayToIntList(continuousDataColumn);
@@ -90,7 +91,8 @@ public class ContinuousFeature extends NaiveClassifier{
         public void print() {
             for (Map.Entry<Integer, Double> itr : mean.entrySet()) {
                 System.out.println(itr.getValue());
-            }for (Map.Entry<Integer, Double> itr : deviation.entrySet()) {
+            }
+            for (Map.Entry<Integer, Double> itr : deviation.entrySet()) {
                 System.out.println(itr.getValue());
             }
         }
@@ -101,7 +103,7 @@ public class ContinuousFeature extends NaiveClassifier{
     }
 
     private void separateContinuousData(List<List<Integer>> lists) {
-        int classIndex = lists.get(0).size() -1 ;
+        int classIndex = lists.get(0).size() - 1;
         for (List<Integer> row : lists) {
             for (int i = continuousDataColumn.size() - 1; i >= 0; i--) {
                 int column = continuousDataColumn.get(i);
@@ -124,7 +126,13 @@ public class ContinuousFeature extends NaiveClassifier{
         PriorityQueue<Node> queue = new PriorityQueue<>();
 
         for (List<Integer> row : testList) {
+            for (int classNum = 1; classNum <= this.classNumber; classNum++) {
+                double probToClass = probTo(classNum, row.subList(0, classIndex));
+                queue.add(new Node(classNum, probToClass));
+            }
 
+            int c = queue.peek().classNumber;
+            if (row.get(classIndex) != c) error++;
         }
 
     }
@@ -133,18 +141,22 @@ public class ContinuousFeature extends NaiveClassifier{
         double p = 1.0;
         for (int column = 0; column < list.size(); column++) {
             if (continuousDataColumn.contains(column)) {
-                p *=
+                p *= probToContinuousData(getMean(column, classNumber), getStd(column, classNumber));
+            } else {
+                double value = super.getFromMap(classNumber, column, list.get(column));
+                p *= value / sumList.get(classNumber);
             }
         }
+        p *= sumList.get(classNumber) / totalSum;
         return p;
     }
 
-    protected double getMean(int row, int classNumber) {
-        return continuousDataList.get(row).getMean(classNumber);
+    protected double getMean(int column, int classNumber) {
+        return continuousDataList.get(column).getMean(classNumber);
     }
 
-    protected double getStd(int row, int classNumber) {
-        return continuousDataList.get(row).getStd(classNumber);
+    protected double getStd(int column, int classNumber) {
+        return continuousDataList.get(column).getStd(classNumber);
     }
 
     protected double probToContinuousData(double mean, double std) {

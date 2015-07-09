@@ -21,6 +21,8 @@ public class Main {
 
         ContinuousFeature solver = new ContinuousFeature(2, 7, 1);
         solver.train(trainList);
+        solver.test(testData);
+        System.out.println(solver.getError());
     }
 }
 

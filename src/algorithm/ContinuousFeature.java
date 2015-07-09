@@ -136,14 +136,6 @@ public class ContinuousFeature extends NaiveClassifier {
 
     }
 
-    protected double probTo(int classNumber, int colIndex, int feature) {
-        double p = 1.0;
-            double value = super.getFromMap(classNumber, colIndex, feature);
-            p *= value / sumList.get(classNumber);
-        p *= sumList.get(classNumber) / totalSum;
-        return p;
-    }
-
 
     private double probContinuousData(int column, int classNumber, double feature) {
         double p = 1.0;

@@ -12,7 +12,7 @@ public class Main {
         // Read from .csv file
         Reader reader = new Reader();
         List<List<Integer>> trainList = reader.readFileAsInt("inputFile/germanTrain.csv");
-        List<List<Integer>> testData = reader.readFileAsInt("inputFile/TestData.csv");
+        List<List<Integer>> testData = reader.readFileAsInt("inputFile/germanTest.csv");
 
 //        NaiveClassifier solver = new NaiveClassifier(2);
 //        solver.train(trainList);

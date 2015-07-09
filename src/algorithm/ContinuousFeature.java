@@ -114,7 +114,25 @@ public class ContinuousFeature extends NaiveClassifier {
             }
         }
 
+        for (List<Integer> row : lists) {
 
+            List<Integer> continuousData = separateContinuousData(row);
+            int originClass = row.get(row.size() - 1);
+            for (int classNumber = 1; classNumber < super.classNumber; classNumber++) {
+                double s = super.probTo(classNumber, row.subList(0, row.size() - 1));
+                double p = 1.0;
+                for (int colIndex = 0; colIndex < continuousDataColumn.length; colIndex++) {
+                    p *= probContinuousData(continuousDataColumn[colIndex], classNumber, continuousData.get(colIndex));
+                }
+                queue.add(new NaiveClassifier.Node(classNumber, p * s));
+            }
+
+            int c = queue.peek().classNumber;
+
+            if (c != originClass) {
+                super.error++;
+            }
+        }
 
     }
 

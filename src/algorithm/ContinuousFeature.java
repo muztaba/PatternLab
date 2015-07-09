@@ -25,7 +25,15 @@ public class ContinuousFeature extends NaiveClassifier {
     @Override
     public void train(List<List<Integer>> lists) {
         for (List<Integer> row : lists) {
-            separateContinuousData(row);
+            List<Integer> continuousData = separateContinuousData(row);
+            int classNumber = row.get(row.size() - 1);
+            for (int index = 0; index < continuousDataColumn.length; index++) {
+                int column = continuousDataColumn[index];
+                if (!map.containsKey(column)) {
+                    map.put(column, new Node());
+                }
+                map.get(column).add(classNumber, continuousData.get(index));
+            }
         }
         super.train(lists);
         for (int i : continuousDataColumn) {
@@ -35,11 +43,23 @@ public class ContinuousFeature extends NaiveClassifier {
         calculateTotalSum();
     }
 
+    private List<Integer> separateContinuousData(List<Integer> row) {
+        List<Integer> list = new ArrayList<>();
+        for (int index = continuousDataColumn.length - 1; index >= 0; index--) {
+            int column = continuousDataColumn[index];
+            int feature = row.get(column);
+            list.add(feature);
+            row.remove(column);
+        }
+        Collections.reverse(list);
+        return list;
+    }
     private class Node {
         // key = indicate class number;
         // value(list of integer) = feature belong to class.
         Map<Integer, List<Integer>> _map = new HashMap<>();
         Map<Integer, Double> mean = new HashMap<>();
+
         Map<Integer, Double> std = new HashMap<>();
 
         public void add(int classNumber, int feature) {
@@ -78,23 +98,10 @@ public class ContinuousFeature extends NaiveClassifier {
                 std.put(classNumber, s);
             }
         }
-
         public double getStd(int classNumber) {
             return std.get(classNumber);
         }
-    }
 
-    private void separateContinuousData(List<Integer> row) {
-        int classNumber = row.get(classIndex);
-        for (int index = continuousDataColumn.length - 1; index >= 0; index--) {
-            int column = continuousDataColumn[index];
-            int feature = row.get(column);
-            if (!map.containsKey(column)) {
-                map.put(column, new Node());
-            }
-            map.get(column).add(classNumber, feature);
-            row.remove(column);
-        }
     }
 
     @Override
@@ -107,24 +114,7 @@ public class ContinuousFeature extends NaiveClassifier {
             }
         }
 
-        for (List<Integer> row : lists) {
-            for (int classNumber = 1; classNumber < this.classNumber; classNumber++) {
-                double p = 1.0;
-                for (int colIndex = 0; colIndex < classIndex; colIndex++) {
-                    int feature = row.get(colIndex);
-                    if (set.contains(colIndex)) {
-                        p *= probContinuousData(colIndex, classNumber, (double) feature);
-                    } else {
-                        p *= probTo(classNumber, colIndex, feature);
-                    }
-                }
-                queue.add(new NaiveClassifier.Node(classNumber, p));
-            }
-            int c = queue.peek().classNumber;
-            if (c != row.get(classIndex)) {
-                super.error++;
-            }
-        }
+
 
     }
 

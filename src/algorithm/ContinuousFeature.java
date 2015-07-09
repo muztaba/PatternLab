@@ -28,18 +28,53 @@ public class ContinuousFeature extends NaiveClassifier {
             separateContinuousData(row);
         }
         super.train(lists);
+        for (int i : continuousDataColumn) {
+            map.get(i).calculateMean();
+            map.get(i).calculateStd();
+        }
     }
 
     private class Node {
         // key = indicate class number;
         // value(list of integer) = feature belong to class.
-        Map<Integer, List<Integer>> map = new HashMap<>();
-
+        Map<Integer, List<Integer>> _map = new HashMap<>();
+        Map<Integer, Double> mean = new HashMap<>();
+        Map<Integer, Double> std = new HashMap<>();
         public void add(int classNumber, int feature) {
-            if (!map.containsKey(classNumber)) {
-                map.put(classNumber, new ArrayList<>());
+            if (!_map.containsKey(classNumber)) {
+                _map.put(classNumber, new ArrayList<>());
             }
-            map.get(classNumber).add(feature);
+            _map.get(classNumber).add(feature);
+        }
+
+        public void calculateMean() {
+            for (Map.Entry<Integer, List<Integer>> itr : _map.entrySet()) {
+                double sum = 0.0;
+                int classNumber = itr.getKey();
+                for (int feature : itr.getValue()) {
+                    sum += feature;
+                }
+                double mean = sum / itr.getValue().size();
+                this.mean.put(classNumber, mean);
+            }
+        }
+
+        public double getMean(int classNumber) {
+            return mean.get(classNumber);
+        }
+
+        public void calculateStd() {
+            for (Map.Entry<Integer, List<Integer>> itr : _map.entrySet()) {
+                int classNumber = itr.getKey();
+                double mean = getMean(classNumber); // Mean should be calculate first
+                double temp = 0.0;
+                for (int i : itr.getValue()) {
+                    temp += Math.pow((i - mean), 2);
+                }
+                double s = temp / itr.getValue().size();
+                s = Math.sqrt(s);
+                std.put(classNumber, s);
+            }
         }
     }
 

@@ -19,9 +19,7 @@ public class Main {
 //        solver.test(testData);
 //        System.out.println(solver.getError());
 
-        ContinuousFeature solver = new ContinuousFeature(2, 1);
-        solver.train(trainList);
-        solver.printTest();
+
     }
 }
 

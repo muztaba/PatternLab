@@ -22,23 +22,27 @@ public class Train {
         this.classSing = classSing;
     }
 
-    public void train(int iteration, List<List> trainList) {
+    public void train(int iteration, List<List<Integer>> trainList) {
         this.wight = ArrayUtils.makeArray(7, -7, 7, random);
         for (int _iteration = 0; _iteration < iteration; ++_iteration) {
             int error = 0;
-            int[] errorSum = ArrayUtils.makeArray(classIndex, 0);
+            int[] errorSum = ArrayUtils.makeArray(classIndex - 1, 0);
 
             for (List<Integer> row : trainList) {
-                row.add(1);
+                double gw = mul(row.subList(0, classIndex));
+                if (gw > 0 && row.get(classIndex) != 1) {
 
+                }
             }
         }
     }
 
-    protected void mul(List<Integer> x, double[] w) {
+    protected double mul(List<Integer> x) {
+        double sum = 0.0;
         for (int i = 0; i < x.size(); i++) {
-            w[i] = x.get(i) * w[i];
+            sum += x.get(i) * wight[i];
         }
+        return sum;
     }
 
 }

@@ -30,8 +30,8 @@ public class ArrayUtils {
 
 
 
-    public static int[] makeArray(int length,int lowerBound, int upperBound, Random random) {
-        int[] array = new int[length];
+    public static double[] makeArray(int length,int lowerBound, int upperBound, Random random) {
+        double[] array = new double[length];
         for (int i = 0; i < array.length; i++) {
             array[i] = random.nextInt(Math.abs(lowerBound) + upperBound) - upperBound;
         }

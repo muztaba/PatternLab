@@ -28,10 +28,12 @@ public class ArrayUtils {
         return array;
     }
 
-    public static int[] makeArray(int length,int from, int to, Random random) {
+
+
+    public static int[] makeArray(int length,int lowerBound, int upperBound, Random random) {
         int[] array = new int[length];
-        for (int i = from; i < to; i++) {
-            array[i] = random.nextInt();
+        for (int i = 0; i < array.length; i++) {
+            array[i] = random.nextInt(Math.abs(lowerBound) + upperBound) - upperBound;
         }
         return array;
     }
@@ -40,7 +42,7 @@ public class ArrayUtils {
                                   int lowerBound, int upperBound, Random random) {
         int[] array = new int[length];
         for (int i = from; i < to; i++) {
-            array[i] = random.nextInt(lowerBound + upperBound) - upperBound;
+            array[i] = random.nextInt(Math.abs(lowerBound) + upperBound) - upperBound;
         }
         return array;
     }

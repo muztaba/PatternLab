@@ -1,5 +1,6 @@
 import algorithm.ContinuousFeature;
 import algorithm.NaiveClassifier;
+import algorithm.perceptron.single.Train;
 import io.Reader;
 
 import java.util.List;
@@ -19,10 +20,13 @@ public class Main {
 //        solver.test(testData);
 //        System.out.println(solver.getError());
 
-        ContinuousFeature solver = new ContinuousFeature(2, 7, 1);
-        solver.train(trainList);
+//        ContinuousFeature solver = new ContinuousFeature(2, 7, 1);
+//        solver.train(trainList);
+//        solver.test(testData);
+//        System.out.println(solver.getError());
+        Train solver = new Train();
+        solver.train(1000, trainList);
         solver.test(testData);
-        System.out.println(solver.getError());
     }
 }
 

@@ -13,20 +13,25 @@ public class ContinuousFeature extends NaiveClassifier {
     private final int classIndex;
     private int[] continuousDataColumn;
     private Map<Integer, Node> map = new HashMap<>();
-
+    private boolean allConData = true;
     public ContinuousFeature(int classNumber, int classIndex, int... continuousDataColumn) {
         super(classNumber);
         this.classIndex = classIndex;
         Arrays.sort(continuousDataColumn);
         this.continuousDataColumn = continuousDataColumn;
 
+
     }
 
     @Override
-    public void train(List<List<Integer>> lists) {
-        for (List<Integer> row : lists) {
-            List<Integer> continuousData = separateContinuousData(row);
-            int classNumber = row.get(row.size() - 1);
+    public void train(List<List<Double>> lists) {
+        if (lists.size() - 1 == continuousDataColumn.length) {
+            allConData = false;
+        }
+        for (List<Double> row : lists) {
+            List<Double> continuousData = separateContinuousData(row);
+            int classNumber = row.get(row.size() - 1).intValue(); // Class value must be in integer.
+
             for (int index = 0; index < continuousDataColumn.length; index++) {
                 int column = continuousDataColumn[index];
                 if (!map.containsKey(column)) {
@@ -35,7 +40,9 @@ public class ContinuousFeature extends NaiveClassifier {
                 map.get(column).add(classNumber, continuousData.get(index));
             }
         }
-        super.train(lists);
+        if (allConData) {
+            super.train(lists);
+        }
         for (int i : continuousDataColumn) {
             map.get(i).calculateMean();
             map.get(i).calculateStd();
@@ -43,11 +50,11 @@ public class ContinuousFeature extends NaiveClassifier {
         calculateTotalSum();
     }
 
-    private List<Integer> separateContinuousData(List<Integer> row) {
-        List<Integer> list = new ArrayList<>();
+    private List<Double> separateContinuousData(List<Double> row) {
+        List<Double> list = new ArrayList<>();
         for (int index = continuousDataColumn.length - 1; index >= 0; index--) {
             int column = continuousDataColumn[index];
-            int feature = row.get(column);
+            double feature = row.get(column);
             list.add(feature);
             row.remove(column);
         }
@@ -57,12 +64,12 @@ public class ContinuousFeature extends NaiveClassifier {
     private class Node {
         // key = indicate class number;
         // value(list of integer) = feature belong to class.
-        Map<Integer, List<Integer>> _map = new HashMap<>();
+        Map<Integer, List<Double>> _map = new HashMap<>();
         Map<Integer, Double> mean = new HashMap<>();
 
         Map<Integer, Double> std = new HashMap<>();
 
-        public void add(int classNumber, int feature) {
+        public void add(int classNumber, double feature) {
             if (!_map.containsKey(classNumber)) {
                 _map.put(classNumber, new ArrayList<>());
             }
@@ -70,10 +77,10 @@ public class ContinuousFeature extends NaiveClassifier {
         }
 
         public void calculateMean() {
-            for (Map.Entry<Integer, List<Integer>> itr : _map.entrySet()) {
+            for (Map.Entry<Integer, List<Double>> itr : _map.entrySet()) {
                 double sum = 0.0;
                 int classNumber = itr.getKey();
-                for (int feature : itr.getValue()) {
+                for (double feature : itr.getValue()) {
                     sum += feature;
                 }
                 double mean = sum / itr.getValue().size();
@@ -86,11 +93,11 @@ public class ContinuousFeature extends NaiveClassifier {
         }
 
         public void calculateStd() {
-            for (Map.Entry<Integer, List<Integer>> itr : _map.entrySet()) {
+            for (Map.Entry<Integer, List<Double>> itr : _map.entrySet()) {
                 int classNumber = itr.getKey();
                 double mean = getMean(classNumber); // Mean should be calculate first
                 double temp = 0.0;
-                for (int i : itr.getValue()) {
+                for (double i : itr.getValue()) {
                     temp += Math.pow((i - mean), 2);
                 }
                 double s = temp / itr.getValue().size();
@@ -105,7 +112,7 @@ public class ContinuousFeature extends NaiveClassifier {
     }
 
     @Override
-    public void test(List<List<Integer>> lists) {
+    public void test(List<List<Double>> lists) {
         PriorityQueue<NaiveClassifier.Node> queue = new PriorityQueue<>();
         Set<Integer> set = new TreeSet<>();
         {
@@ -114,12 +121,15 @@ public class ContinuousFeature extends NaiveClassifier {
             }
         }
 
-        for (List<Integer> row : lists) {
+        for (List<Double> row : lists) {
 
-            List<Integer> continuousData = separateContinuousData(row);
-            int originClass = row.get(row.size() - 1);
+            List<Double> continuousData = separateContinuousData(row);
+            int originClass = row.get(row.size() - 1).intValue(); //Class index integer.
             for (int classNumber = 1; classNumber < super.classNumber; classNumber++) {
-                double s = super.probTo(classNumber, row.subList(0, row.size() - 1));
+                double s = 1.0;
+                if (allConData) {
+                     s = super.probTo(classNumber, row.subList(0, row.size() - 1));
+                }
                 double p = 1.0;
                 for (int colIndex = 0; colIndex < continuousDataColumn.length; colIndex++) {
                     p *= probContinuousData(continuousDataColumn[colIndex], classNumber, continuousData.get(colIndex));

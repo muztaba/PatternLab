@@ -10,7 +10,7 @@ public class NaiveClassifier {
     // Map 1st = which class it is
     // Map 2nd = what feature it is. Generally column number
     // Map 3rd = what is the feature number. That is what is in a[i][j].
-    private Map<Integer, Map<Integer, Map<Integer, Integer>>> classList;
+    private Map<Integer, Map<Integer, Map<Double, Integer>>> classList;
     protected Map<Integer, Integer> sumList;
     protected int classNumber;
     protected int error;
@@ -29,16 +29,17 @@ public class NaiveClassifier {
         }
     }
 
-    public void train(List<List<Integer>> lists) {
+    public void train(List<List<Double>> lists) {
         int classIndex = lists.get(0).size() - 1;
-        for (List<Integer> row : lists) {
-            int whichClass = row.get(classIndex);
+        for (List<Double> row : lists) {
+            // class value is always integer value.
+            int whichClass = row.get(classIndex).intValue();
 
             if (!sumList.containsKey(whichClass)) sumList.put(whichClass, 0);
 
             for (int featureNum = 0; featureNum < classIndex; featureNum++) {
-                Map<Integer, Map<Integer, Integer>> temp = classList.get(whichClass);
-                int feature = row.get(featureNum);
+                Map<Integer, Map<Double, Integer>> temp = classList.get(whichClass);
+                double feature = row.get(featureNum);
 
                 if (!temp.containsKey(featureNum)) {
                     temp.put(featureNum, new HashMap<>());
@@ -77,11 +78,11 @@ public class NaiveClassifier {
 
     }
 
-    public void test(List<List<Integer>> testList) {
+    public void test(List<List<Double>> testList) {
         calculateTotalSum();
         int classIndex = testList.get(0).size() - 1;
         PriorityQueue<Node> queue = new PriorityQueue<>();
-        for (List<Integer> row : testList) {
+        for (List<Double> row : testList) {
 
             for (int classNum = 1; classNum <= this.classNumber; classNum++) {
                 double probToClass = probTo(classNum, row.subList(0, classIndex));
@@ -99,7 +100,7 @@ public class NaiveClassifier {
         return this.error;
     }
 
-    protected double probTo(int classNum, List<Integer> features) {
+    protected double probTo(int classNum, List<Double> features) {
         double p = 1.0;
         for (int featureNum = 0; featureNum < features.size(); featureNum++) {
             double value = getFromMap(classNum, featureNum, features.get(featureNum));
@@ -109,7 +110,7 @@ public class NaiveClassifier {
         return p;
     }
 
-    protected double getFromMap(int classNum, int featureNum, int feature) {
+    protected double getFromMap(int classNum, int featureNum, double feature) {
         Integer integer = classList.get(classNum).get(featureNum).get(feature);
         return integer != null ? integer.doubleValue() : 1.0;
     }
@@ -121,13 +122,13 @@ public class NaiveClassifier {
     }
 
     public void printTrainData() {
-        for (Map.Entry<Integer, Map<Integer, Map<Integer, Integer>>> tempClassList : classList.entrySet()) {
+        for (Map.Entry<Integer, Map<Integer, Map<Double, Integer>>> tempClassList : classList.entrySet()) {
             System.out.println(tempClassList.getKey());
-            Map<Integer, Map<Integer, Integer>> tempFeature = tempClassList.getValue();
-            for (Map.Entry<Integer, Map<Integer, Integer>> feature : tempFeature.entrySet()) {
+            Map<Integer, Map<Double, Integer>> tempFeature = tempClassList.getValue();
+            for (Map.Entry<Integer, Map<Double, Integer>> feature : tempFeature.entrySet()) {
                 System.out.print(feature.getKey() + " -> ");
-                Map<Integer, Integer> count = feature.getValue();
-                for (Map.Entry<Integer, Integer> itr : count.entrySet()) {
+                Map<Double, Integer> count = feature.getValue();
+                for (Map.Entry<Double, Integer> itr : count.entrySet()) {
                     System.out.println(itr.getKey() + " " + itr.getValue() + " ");
                 }
             }

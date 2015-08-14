@@ -15,6 +15,7 @@ public class Reader {
     private BufferedReader reader;
     private List<List<String>> printList;
     private List<List<Integer>> printIntList;
+    private List<List<Double>> printDoubleList;
     private String path;
 
     public Reader() {
@@ -78,15 +79,46 @@ public class Reader {
         return listsInt;
     }
 
+    public List<List<Double>> readFileAsDouble() {
+        readFile();
+        List<List<Double>> listsInt = new ArrayList<>();
+
+        for (List<String> row : printList) {
+            List<Double> temp = new ArrayList<>();
+            for (String str : row) {
+                double strToInt = Double.parseDouble(str);
+                temp.add(strToInt);
+            }
+            listsInt.add(temp);
+        }
+        printDoubleList = listsInt;
+        return listsInt;
+    }
+
     public List<List<Integer>> readFileAsInt(String path) {
         this.path = path;
         return readFileAsInt();
+    }
+
+    public List<List<Double>> readFileAsDouble(String path) {
+        this.path = path;
+        return readFileAsDouble();
     }
 
     public void printIntData() {
         if (printIntList == null) readFile();
         for (List<Integer> row : printIntList) {
             for (int i : row) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void printDoubleData() {
+        if (printDoubleList == null) readFile();
+        for (List<Double> row : printDoubleList) {
+            for (double i : row) {
                 System.out.print(i + " ");
             }
             System.out.println();
